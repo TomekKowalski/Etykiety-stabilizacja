@@ -102,44 +102,147 @@ namespace Etykiety_stabilizacja
 
         public void wypelni_comboBox()
         {
+            /*
+            string[] tab_str_wzory_klient = new string[15];
+            for (int i = 0; i < 15; i++ )
+            {
+                if (!tab_wzory_edycja[i].Equals(""))
+                {
+                    tab_str_wzory_klient[i] = tab_wzory_edycja[i] + " # " + tab_klient_edycja[i];
+                }
+                else
+                {
+                    tab_str_wzory_klient[i] = "";
+                }
+            }
+             */
             comboBox_wzor.Items.AddRange(tab_wzory_edycja);
-
+            //comboBox_wzor.Items.AddRange(tab_str_wzory_klient);
             
         }
 
         public void wypelni_wartosci()
         {
+            string str_zapytanieSQL = "";
+            string str_wzor = "";
+            string str_klient = "";
+            double d_temp = 0.0;
+
+            dataSet_dane_parti.Clear();
+            dataGridView_dane_parti.DataSource = dataSet_dane_parti;
+
             try
             {
+                str_zapytanieSQL = "SELECT  Nr_parti, Nr_sztuki, Metry, Kilogramy, Uwagi, Wzor, Klient FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';";
                 polocz.Open();
-                //MySql.Data.MySqlClient.MySqlCommand szukaj_parti_do_drukku = new MySql.Data.MySqlClient.MySqlCommand("SELECT ID_stabilizacja,  Nr_sztuki, Metry, Kilogramy, Uwagi, Wzor, Klient FROM ETYKIETY_STABILIZACJA_TAB WHERE Nr_parti = \'" + textBox_nr_parti.Text.ToString() + "\' AND Artykul = \'" + label_artykul_baza.Text.ToString() + "\';", polocz);
-                MySql.Data.MySqlClient.MySqlCommand nr_parti = new MySql.Data.MySqlClient.MySqlCommand("SELECT  Nr_parti FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
-                label_nr_parti_baza.Text = nr_parti.ExecuteScalar().ToString();
+                MySqlCommand dane_parti = new MySqlCommand(str_zapytanieSQL, polocz);
+                MySqlDataAdapter adapter_dane_parti = new MySqlDataAdapter(dane_parti);
+                adapter_dane_parti.Fill(dataSet_dane_parti, "tabela_dane_parti");
+                dataGridView_dane_parti.DataSource = dataSet_dane_parti.Tables["tabela_dane_parti"];
 
-                MySql.Data.MySqlClient.MySqlCommand nr_sztuki = new MySql.Data.MySqlClient.MySqlCommand("SELECT  Nr_sztuki FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
-                textBox_nr_sztuki.Text = nr_sztuki.ExecuteScalar().ToString();
+                polocz.Close();
 
-                MySql.Data.MySqlClient.MySqlCommand metry = new MySql.Data.MySqlClient.MySqlCommand("SELECT  Metry FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
-                textBox_metry.Text = metry.ExecuteScalar().ToString();
+            }catch(Exception)
+            {
+                polocz.Close();
 
-                MySql.Data.MySqlClient.MySqlCommand waga = new MySql.Data.MySqlClient.MySqlCommand("SELECT  Kilogramy FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
-                double d_temp = Convert.ToDouble(waga.ExecuteScalar().ToString());
-
+            }
+            try
+            {
+                label_nr_parti_baza.Text = dataGridView_dane_parti.Rows[0].Cells[0].Value.ToString();
+            }catch(Exception)
+            {
+                label_nr_parti_baza.Text = "";
+            }
+            try
+            {
+                textBox_nr_sztuki.Text = dataGridView_dane_parti.Rows[0].Cells[1].Value.ToString();
+            }
+            catch (Exception)
+            {
+                textBox_nr_sztuki.Text = "";
+            }
+            try
+            {
+                textBox_metry.Text = dataGridView_dane_parti.Rows[0].Cells[2].Value.ToString();
+            }
+            catch (Exception)
+            {
+                textBox_metry.Text = "";
+            }
+            try
+            {
+                d_temp = Convert.ToDouble(dataGridView_dane_parti.Rows[0].Cells[3].Value.ToString());
                 dataGridView_waga.Rows[0].Cells[0].Value = d_temp;
-
-                MySql.Data.MySqlClient.MySqlCommand uwagi = new MySql.Data.MySqlClient.MySqlCommand("SELECT Uwagi FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
-                textBox_uwagi.Text = uwagi.ExecuteScalar().ToString();
+            }
+            catch (Exception)
+            {
+                d_temp = 0.0;
+            }
+            try
+            {
+                textBox_uwagi.Text = dataGridView_dane_parti.Rows[0].Cells[4].Value.ToString();
+            }
+            catch (Exception)
+            {
+                textBox_uwagi.Text = "";
+            }
+            try
+            {
+                str_wzor = dataGridView_dane_parti.Rows[0].Cells[5].Value.ToString();
                
-
-                MySql.Data.MySqlClient.MySqlCommand wzor = new MySql.Data.MySqlClient.MySqlCommand("SELECT Wzor FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
-                string str_wzor = wzor.ExecuteScalar().ToString();
                 comboBox_wzor.Items.Add(str_wzor);
                 comboBox_wzor.Text = str_wzor;
-
-                polocz.Close();
-            }catch(Exception){
-                polocz.Close();
             }
+            catch (Exception)
+            {
+                str_wzor = "";
+            }
+            try
+            {
+                str_klient = dataGridView_dane_parti.Rows[0].Cells[6].Value.ToString();
+            }
+            catch (Exception)
+            {
+                str_klient = "";
+            }
+
+            //comboBox_wzor.Items.Add(str_wzor + " # " + str_klient);
+            //comboBox_wzor.Text = str_wzor + " # " + str_klient;
+
+
+
+           // try
+           // {
+                //polocz.Open();
+                //MySql.Data.MySqlClient.MySqlCommand szukaj_parti_do_drukku = new MySql.Data.MySqlClient.MySqlCommand("SELECT ID_stabilizacja,  Nr_sztuki, Metry, Kilogramy, Uwagi, Wzor, Klient FROM ETYKIETY_STABILIZACJA_TAB WHERE Nr_parti = \'" + textBox_nr_parti.Text.ToString() + "\' AND Artykul = \'" + label_artykul_baza.Text.ToString() + "\';", polocz);
+                //MySql.Data.MySqlClient.MySqlCommand nr_parti = new MySql.Data.MySqlClient.MySqlCommand("SELECT  Nr_parti FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
+                //label_nr_parti_baza.Text = nr_parti.ExecuteScalar().ToString();
+
+                //MySql.Data.MySqlClient.MySqlCommand nr_sztuki = new MySql.Data.MySqlClient.MySqlCommand("SELECT  Nr_sztuki FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
+                //textBox_nr_sztuki.Text = nr_sztuki.ExecuteScalar().ToString();
+
+                //MySql.Data.MySqlClient.MySqlCommand metry = new MySql.Data.MySqlClient.MySqlCommand("SELECT  Metry FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
+               // textBox_metry.Text = metry.ExecuteScalar().ToString();
+
+               // MySql.Data.MySqlClient.MySqlCommand waga = new MySql.Data.MySqlClient.MySqlCommand("SELECT  Kilogramy FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
+               // double d_temp = Convert.ToDouble(waga.ExecuteScalar().ToString());
+
+               // dataGridView_waga.Rows[0].Cells[0].Value = d_temp;
+
+               // MySql.Data.MySqlClient.MySqlCommand uwagi = new MySql.Data.MySqlClient.MySqlCommand("SELECT Uwagi FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
+               // textBox_uwagi.Text = uwagi.ExecuteScalar().ToString();
+               
+
+               // MySql.Data.MySqlClient.MySqlCommand wzor = new MySql.Data.MySqlClient.MySqlCommand("SELECT Wzor FROM ETYKIETY_STABILIZACJA_TAB WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
+               // string str_wzor = wzor.ExecuteScalar().ToString();
+               // comboBox_wzor.Items.Add(str_wzor);
+               // comboBox_wzor.Text = str_wzor;
+
+               // polocz.Close();
+           // }catch(Exception){
+              //  polocz.Close();
+            //}
         }
 
         private void button_zamknij_Click(object sender, EventArgs e)
@@ -166,6 +269,7 @@ namespace Etykiety_stabilizacja
             {
                 string str_klient_do_edycji = "";
                 string str_uwagi_do_zapisania = "";
+                
                 for (int i = 0; i < 15; i++)
                 {
                     if (tab_wzory_edycja[i].Equals(comboBox_wzor.Text.ToString()))
@@ -173,6 +277,7 @@ namespace Etykiety_stabilizacja
                         str_klient_do_edycji = tab_klient_edycja[i];
                     }
                 }
+                 
 
                 if(textBox_uwagi.Text.ToString().Equals(""))
                 {
@@ -185,8 +290,8 @@ namespace Etykiety_stabilizacja
 
                 polocz.Open();
 
-                //MySql.Data.MySqlClient.MySqlCommand edytuj = new MySql.Data.MySqlClient.MySqlCommand("UPDATE `ETYKIETY_STABILIZACJA_TAB` SET `Nr_sztuki`= \'" + textBox_nr_sztuki.Text.ToString() + "\', `Metry`= \'" + textBox_metry.Text.ToString() + "\',`Kilogramy`=\'" + dataGridView_waga.Rows[0].Cells[0].Value.ToString().Replace(",", ".") + "\',`Uwagi`=\'" + str_uwagi_do_zapisania + "\',`Wzor`=\'" + comboBox_wzor.Text.ToString() + "\',`Klient`=\'" + str_klient_do_edycji + "\' WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
-                MySql.Data.MySqlClient.MySqlCommand edytuj = new MySql.Data.MySqlClient.MySqlCommand("UPDATE `ETYKIETY_STABILIZACJA_TAB` SET `Nr_sztuki`= \'" + textBox_nr_sztuki.Text.ToString() + "\', `Metry`= \'" + textBox_metry.Text.ToString() + "\',`Kilogramy`=\'" + dataGridView_waga.Rows[0].Cells[0].Value.ToString().Replace(",", ".") + "\',`Uwagi`=\'" + str_uwagi_do_zapisania + "\',`Wzor`=\'" + comboBox_wzor.Text.ToString() + "\' WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
+                MySql.Data.MySqlClient.MySqlCommand edytuj = new MySql.Data.MySqlClient.MySqlCommand("UPDATE `ETYKIETY_STABILIZACJA_TAB` SET `Nr_sztuki`= \'" + textBox_nr_sztuki.Text.ToString() + "\', `Metry`= \'" + textBox_metry.Text.ToString() + "\',`Kilogramy`=\'" + dataGridView_waga.Rows[0].Cells[0].Value.ToString().Replace(",", ".") + "\',`Uwagi`=\'" + str_uwagi_do_zapisania + "\',`Wzor`=\'" + comboBox_wzor.Text.ToString() + "\',`Klient`=\'" + str_klient_do_edycji + "\' WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
+               // MySql.Data.MySqlClient.MySqlCommand edytuj = new MySql.Data.MySqlClient.MySqlCommand("UPDATE `ETYKIETY_STABILIZACJA_TAB` SET `Nr_sztuki`= \'" + textBox_nr_sztuki.Text.ToString() + "\', `Metry`= \'" + textBox_metry.Text.ToString() + "\',`Kilogramy`=\'" + dataGridView_waga.Rows[0].Cells[0].Value.ToString().Replace(",", ".") + "\',`Uwagi`=\'" + str_uwagi_do_zapisania + "\',`Wzor`=\'" + comboBox_wzor.Text.ToString() + "\' WHERE ID_stabilizacja = \'" + str_ID_stabilizacja + "\';", polocz);
                
                 
                 edytuj.ExecuteNonQuery();

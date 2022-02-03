@@ -305,108 +305,7 @@ namespace Etykiety_stabilizacja
 
             return metry;
 
-        }
-
-       
-        /*
-        public void uruchamianie_watku(Object myObject, EventArgs myEventArgs)
-        {
-
-           // uruchom_automatycznie = new Thread(new ThreadStart(this.watek_pobieranie_metrow));
-           // uruchom_automatycznie.Start();
-
-        }
-        */
-        /*
-        private void watek_pobieranie_metrow()
-        {
-
-            try
-            {
-                File.Copy(path_pomiar_metry, path_metry_txt, true);
-
-                pobierz_kasuj_metry();
-            }
-            catch (Exception)
-            {
-                
-            }
-        }
-
-        public void pobierz_kasuj_metry()
-        {
-           
-            delegate_wpisywanie_metry_do_textBox wpisz_metry_do_texBox = new delegate_wpisywanie_metry_do_textBox(this.wpisywanie_metry_do_textBox);
-
-
-
-            List<string> tmp = new List<string>();
-            string tmp2;
-
-
-            StreamReader odczyt_plik_pomiar_metry = new StreamReader(path_metry_txt);
-
-            while ((tmp2 = odczyt_plik_pomiar_metry.ReadLine()) != null)
-            {
-                tmp.Add(tmp2);
-            }
-
-            odczyt_plik_pomiar_metry.Close();
-
-            Invoke(wpisz_metry_do_texBox, tmp[tmp.Count - 1].ToString());
-
-
-            try
-            {             
-                
-                StreamWriter pomiar_metry_czysc = new StreamWriter(path_metry_txt);
-                pomiar_metry_czysc.Write("");
-
-                pomiar_metry_czysc.Close();
-                 
-                 
-
-            }
-            catch (Exception)
-            {
-                
-            }
-
-
-        }
-
-        private void wpisywanie_metry_do_textBox(string str_metry)
-        {
-            str_metry = str_metry.Replace(" ", "");
-            str_metry = str_metry.Replace(";", "");
-            str_metry = policz_metry(str_metry);
-
-            str_stan_licznika = str_metry;
-            textBox_odczyt_metrow.Text = str_metry + " m/b";
-                       
-        }
-        private delegate void delegate_wpisywanie_metry_do_textBox(string str_metry);
-        
-
-        
-        public void pobierz_zero()
-        {
-            try
-            {
-                polocz.Open();
-
-                MySqlCommand pobierz_zero = new MySqlCommand("SELECT procent_klient FROM PRZELICZNIK_METRY_TAB WHERE Klient = \'zero\';", polocz);
-                int_procent_zero = Convert.ToInt32(pobierz_zero.ExecuteScalar().ToString());
-
-                polocz.Close();
-            }
-            catch (Exception)
-            {
-                polocz.Close();
-                int_procent_zero = 0;
-            }
-        }
-         */
+        }    
 
         private void textBox_nr_parti_Click(object sender, EventArgs e)
         {
@@ -1916,11 +1815,12 @@ namespace Etykiety_stabilizacja
                 catch (Exception) { }
                 
                                                                          
-                /*                                                                          
+                 /*                                                                     
                 printDocument_etykieta.DefaultPageSettings.Landscape = false;
                 printPreviewDialog1.Document = printDocument_etykieta;
                 printPreviewDialog1.ShowDialog();
-                 */
+                  */
+                
                                                                                                                                                                       
                  
             }
