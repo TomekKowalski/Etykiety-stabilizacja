@@ -92,6 +92,7 @@ namespace Etykiety_stabilizacja
         bool flaga_cena;
         bool flaga_zapisz_metry_do_druku;
         bool flaga_edycja_metry_do_druku;
+        bool flaga_drukowanie = true;
 
         int int_procent_zero;
         int int_procent_metry_dla_artykul = 0;
@@ -146,19 +147,42 @@ namespace Etykiety_stabilizacja
             timer_sprawdz_port.Interval = 500;
             timer_sprawdz_port.Start();
 
-            try
+            //////jesli port jest zamkniety to go otworz///////////
+            if(!serialPort1.IsOpen)
             {
-                odczyt_ustawien();
-                serialPort1.PortName = str_port_Name;
-                serialPort1.Open();
-               // sprawdz_port();
+                try
+                {
+                    
+                    otwieranie_serialPort();
+                }
+                catch (Exception)
+                {
+                    
+                }
             }
-            catch (Exception)
+            if (!serialPort1.IsOpen)
             {
                 MessageBox.Show("Nie można połączyc z licznikiem.\n Pomiar nie będzie mozliwy !!!", "Uwaga !!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             
             
+            
+
+        }
+
+        public void otwieranie_serialPort()
+        {
+            try
+            {
+                odczyt_ustawien();
+                serialPort1.PortName = str_port_Name;
+                serialPort1.Open();
+                // sprawdz_port();
+            }
+            catch (Exception)
+            {
+                //MessageBox.Show("Nie można połączyc z licznikiem.\n Pomiar nie będzie mozliwy !!!", "Uwaga !!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
         }
 
@@ -1204,7 +1228,10 @@ namespace Etykiety_stabilizacja
 
                     label_poprzedni_pomiar_metrow.Text = str_metry_do_druku;
 
-                    drukuj_etykieta();
+                    if (flaga_drukowanie == true)
+                    {
+                        drukuj_etykieta();
+                    }
 
                     dodaj_sztuke();
 
@@ -1802,7 +1829,7 @@ namespace Etykiety_stabilizacja
 
         public void drukuj_etykieta()
         {
-            if (!str_klient_do_druku_etykieta.Equals("PAKAITA") && !str_klient_do_druku_etykieta.Equals("FABRICANT") && !str_klient_do_druku_etykieta.Equals("TOMTEX") && !str_klient_do_druku_etykieta.Equals("TOMTEX/MATERACOWE") && !str_klient_do_druku_etykieta.Equals("TOMTEX BIS") && !str_klient_do_druku_etykieta.Equals("OGANES HMAJAK") && !str_klient_do_druku_etykieta.Equals("KNITTEX"))
+            if (!str_klient_do_druku_etykieta.Equals("PAKAITA") && !str_klient_do_druku_etykieta.Equals("FABRICANT") && !str_klient_do_druku_etykieta.Equals("TOMTEX") && !str_klient_do_druku_etykieta.Equals("TOMTEX/MATERACOWE") && !str_klient_do_druku_etykieta.Equals("TOMTEX BIS") && !str_klient_do_druku_etykieta.Equals("OGANES HMAJAK") && !str_klient_do_druku_etykieta.Equals("KNITTEX") && !str_klient_do_druku.Equals("KNITTEX"))
             {
                
                
@@ -1878,7 +1905,7 @@ namespace Etykiety_stabilizacja
                  
             }
 
-            if (str_klient_do_druku_etykieta.Equals("KNITTEX"))
+            if (str_klient_do_druku_etykieta.Equals("KNITTEX") || str_klient_do_druku.Equals("KNITTEX"))
             {
                 
                 try
@@ -1890,11 +1917,13 @@ namespace Etykiety_stabilizacja
                 catch (Exception) { }
                  
                  
+                 
                 /*
                 printDocument_etykieta_Knittex.DefaultPageSettings.Landscape = false;
                 printPreviewDialog1.Document = printDocument_etykieta_Knittex;
                 printPreviewDialog1.ShowDialog();
                  */
+                 
                  
                  
                  
@@ -3798,6 +3827,23 @@ namespace Etykiety_stabilizacja
         }
         private void watek_pobieranie_metrow()
         {
+            if (!serialPort1.IsOpen)
+            {
+                try
+                {
+                    //odczyt_ustawien();
+                    //serialPort1.PortName = str_port_Name;
+                    //serialPort1.Open();
+                    // sprawdz_port();
+                    otwieranie_serialPort();
+                }
+                catch (Exception)
+                {
+                   // MessageBox.Show("Nie można połączyc z licznikiem.\n Pomiar nie będzie mozliwy !!!", "Uwaga !!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+
             delegate_odczyt_modbus odczytaj_modbus = new delegate_odczyt_modbus(this.odczyt_modbus);
            
             Invoke(odczytaj_modbus);
@@ -3805,6 +3851,9 @@ namespace Etykiety_stabilizacja
 
         int value_temp = 0;
         int int_wartosc_70 = 0;
+        double d_wartosc = 0.00;
+        double procent = 0.00;
+        double d_wartosc_temp = 0.00;
 
         private delegate void delegate_odczyt_modbus();
         public void odczyt_modbus()
@@ -3853,16 +3902,18 @@ namespace Etykiety_stabilizacja
                     str_wartows_hex = str_wartows_hex.Substring(6, 4);
 
                     int value = Convert.ToInt32(str_wartows_hex, 16);
+
                     
-                    //////dodaje do 70 /////////////
-                    if(str_wartosc_cyklu_70.Equals("1"))
-                    {
-                        value_temp = 64523;
-                    }
                     if (str_wartosc_cyklu_70.Equals("0"))
                     {
                         value_temp = 0;
                     }
+
+                    //////dodaje do 70 /////////////
+                    if(str_wartosc_cyklu_70.Equals("1"))
+                    {
+                        value_temp = 64523;
+                    }                   
                     ////////////dodaje do 130 //////////
                     if (str_wartosc_cyklu_70.Equals("2"))
                     {
@@ -3878,17 +3929,59 @@ namespace Etykiety_stabilizacja
                     {
                         value_temp = 258092;
                     }
+                    if (str_wartosc_cyklu_70.Equals("5"))
+                    {
+                        value_temp = 322615;
+                    }
+                    if (str_wartosc_cyklu_70.Equals("6"))
+                    {
+                        value_temp = 387138;
+                    }
+                    if (str_wartosc_cyklu_70.Equals("7"))
+                    {
+                        value_temp = 451661;
+                    }
+                    if (str_wartosc_cyklu_70.Equals("8"))
+                    {
+                        value_temp = 516184;
+                    }
+                    if (str_wartosc_cyklu_70.Equals("9"))
+                    {
+                        value_temp = 580707;
+                    }
+                    if (str_wartosc_cyklu_70.Equals("A"))
+                    {
+                        value_temp = 645230;
+                    }
+                    if (str_wartosc_cyklu_70.Equals("B"))
+                    {
+                        value_temp = 709753;
+                    }
+                    if (str_wartosc_cyklu_70.Equals("C"))
+                    {
+                        value_temp = 774276;
+                    }
+                    if (str_wartosc_cyklu_70.Equals("D"))
+                    {
+                        value_temp = 838799;
+                    }
+                    if (str_wartosc_cyklu_70.Equals("E"))
+                    {
+                        value_temp = 903322;
+                    }
+                     
                     if (str_wartosc_cyklu_70.Equals("F"))
                     {
                         value = 0;
                     }
-                     
 
-                    value += value_temp;
 
-                    double d_wartosc = Convert.ToDouble(value)/1000;
-                    double procent = 0.07;
-                    double d_wartosc_temp = 0.00;
+
+                        value += value_temp;
+
+                    d_wartosc = Convert.ToDouble(value)/1000;
+                    procent = 0.07;
+                    d_wartosc_temp = 0.00;
                     
 
 
@@ -3933,10 +4026,19 @@ namespace Etykiety_stabilizacja
                         flaga_zapisz_metry_do_druku = true;
                     }
 
-                    ///dodaj 7 % /////////////
-
-                    d_wartosc_temp = d_wartosc * procent;
-                    d_wartosc = d_wartosc + d_wartosc_temp;
+                    if (d_wartosc < 320)
+                    {
+                        ///dodaj 7 % /////////////
+                        d_wartosc_temp = d_wartosc * procent;
+                        d_wartosc = d_wartosc + d_wartosc_temp;
+                    }
+                    else
+                    {
+                        procent = 0.076;
+                        ///dodaj 7,5 % /////////////
+                        d_wartosc_temp = d_wartosc * procent;
+                        d_wartosc = d_wartosc + d_wartosc_temp;
+                    }
 
                     textBox_odczyt_metrow.Text = d_wartosc.ToString("F0");
                     int_wartosc_70 = Convert.ToInt32(textBox_odczyt_metrow.Text.ToString());
@@ -3963,6 +4065,7 @@ namespace Etykiety_stabilizacja
                     klawiatura_numeryczna.textBox__wartosc_cyfrowa.Text = textBox_odczyt_metrow.Text.ToString();
                 }
                  */
+                serialPort1.Close();
 
 
             }
@@ -4233,6 +4336,28 @@ namespace Etykiety_stabilizacja
         {
             Stabilizacja_wstepna stabilizacja_wstepna = new Stabilizacja_wstepna(str_sprawdz_nr_karta, str_nr_parti_do_zapisania, label_artykul_baza.Text.ToString(), str_data_parti, str_klient_do_druku_etykieta);
             stabilizacja_wstepna.Show();
+        }
+
+        private void button_drukowanie_bez_drukowania_Click(object sender, EventArgs e)
+        {
+            
+            if(flaga_drukowanie == true)
+            {
+                flaga_drukowanie = false;
+                button_drukowanie_bez_drukowania.Visible = false;
+                button_bez_drukowania.Visible = true;
+            }
+        }
+
+        private void button_bez_drukowania_Click(object sender, EventArgs e)
+        {
+            if (flaga_drukowanie == false)
+            {
+                flaga_drukowanie = true;
+                button_drukowanie_bez_drukowania.Visible = true;
+                button_bez_drukowania.Visible = false;
+            }
+
         }
         
 
