@@ -1168,13 +1168,19 @@ namespace Etykiety_stabilizacja
 
                 if (int_sprawdz_nr_artykulu >= 0)
                 {
-                    d_kilogramy = d_kilogramy + 0.3;
+                    if (d_kilogramy > 0.00)
+                    {
+                        d_kilogramy = d_kilogramy + 0.3;
+                    }
                 }
                 int_sprawdz_nr_artykulu = label_artykul_baza.Text.ToString().IndexOf("B402");
 
                 if (int_sprawdz_nr_artykulu >= 0)
                 {
-                    d_kilogramy = d_kilogramy + 0.3;
+                    if (d_kilogramy > 0.00)
+                    {
+                        d_kilogramy = d_kilogramy + 0.3;
+                    }
                 }
                 //////////////////////////////////////////////////////////////////////////////////
 
@@ -3624,7 +3630,14 @@ namespace Etykiety_stabilizacja
 
             rysowanie.DrawString(label_art_baza.Text.ToString(), czcionka_10, black, 200, 235);
             rysowanie.DrawString(str_sklad_dzianiny, czcionka_10, black, 200, 258);
-            rysowanie.DrawString(str_kolor_do_druku, czcionka_14, black, 200, 280);
+            if (!str_kolor_do_druku.Equals("POPRAWA") && !str_kolor_do_druku.Equals("REKLAMACJA"))
+            {
+                rysowanie.DrawString(str_kolor_do_druku, czcionka_14, black, 200, 280);
+            }
+            else
+            {
+                rysowanie.DrawString("", czcionka_14, black, 200, 280);
+            }
             rysowanie.DrawString(label_szer_stab_baza.Text.ToString()+" cm", czcionka_14, black, 200, 302);
             rysowanie.DrawString(textBox_nr_parti.Text.ToString(), czcionka_14, black, 200, 326);
             rysowanie.DrawString(str_ktora_sztuka_do_druku, czcionka_14, black, 200, 350);
