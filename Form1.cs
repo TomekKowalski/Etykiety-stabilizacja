@@ -1840,13 +1840,13 @@ namespace Etykiety_stabilizacja
                     printDocument_etykieta.Print();
                 }
                 catch (Exception) { }
-                
-                                                                         
-                 /*                                                                     
+                                                                                       
+                 /*                                                                    
                 printDocument_etykieta.DefaultPageSettings.Landscape = false;
                 printPreviewDialog1.Document = printDocument_etykieta;
                 printPreviewDialog1.ShowDialog();
                   */
+                  
                 
                                                                                                                                                                       
                  
@@ -2155,7 +2155,7 @@ namespace Etykiety_stabilizacja
                 rysowanie.DrawString(str_kilogramy_do_druku, czcionka_25, black, 170, 253);
             }
 
-            if (!str_kolor_do_druku.Equals("POPRAWA"))
+            if (!str_kolor_do_druku.Equals("POPRAWA") && !str_kolor_do_druku.Equals("REKLAMACJA"))
             {
                 rysowanie.DrawString(str_kolor_do_druku, czcionka_15, black, 150, 300);
             }
@@ -2163,6 +2163,7 @@ namespace Etykiety_stabilizacja
             {
                 rysowanie.DrawString("", czcionka_15, black, 150, 300);
             }
+            
 
             int int_sprawdz_przefarb = 0;
             int_sprawdz_przefarb = str_nr_koloru_an_farb_do_druku.IndexOf("PRZEFARB");
